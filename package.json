@@ -1,0 +1,25 @@
+{
+  "name": "memplator",
+  "version": "1.0.0",
+  "description": "An inline Telgram bot to search templates from https://t.me/memplate",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kouroshalinaghi/memplator.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kouroshalinaghi/memplator/issues"
+  },
+  "homepage": "https://github.com/kouroshalinaghi/memplator#readme",
+  "dependencies": {
+    "dotenv": "^16.0.1",
+    "node-telegram-bot-api": "^0.58.0"
+  }
+}
