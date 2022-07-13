@@ -2,11 +2,11 @@ import dotenv from 'dotenv'
 import TelegramBot from 'node-telegram-bot-api'
 import { Low, JSONFile } from 'lowdb'
 
-const token=process.env.TOKEN
-const channel_id=process.env.CHANNEL_ID
-const helper_channel_id=process.env.HELPER_CHANNEL_ID
-
 dotenv.config()
+
+const token = process.env.TOKEN
+const channel_id = process.env.CHANNEL_ID
+const helper_channel_id = process.env.HELPER_CHANNEL_ID
 
 const adapter = new JSONFile('database.json')
 const db = new Low(adapter)
