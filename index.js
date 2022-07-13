@@ -23,15 +23,15 @@ const search = query => {
 }
 
 const informMe = (id, event) => {
-  let resp = ""
+  let resp = ''
   switch (event) {
-    case "new_post":
+    case 'new_post':
       resp = `Added #${id} to the database.`
       break;
-    case "edit_post":
+    case 'edit_post':
       resp = `Edited #${id} in the database.`
       break;
-    case "delete_post":
+    case 'delete_post':
       resp = `Deleted #${id} from the database.`
   }
 
@@ -41,7 +41,7 @@ const informMe = (id, event) => {
 async function handle_post(msg) {
   db.data.push({
     id: msg.message_id,
-    text: msg.caption || "",
+    text: msg.caption || '',
     height: msg.photo[msg.photo.length - 1].height,
     width: msg.photo[msg.photo.length - 1].width
   })
@@ -66,13 +66,13 @@ async function handle_delete(msg, match) {
 }
 
 bot.on('channel_post', msg => {
-  if (msg.photo) {// && msg.sender_chat.username == channel_id) {
+  if (msg.photo && msg.sender_chat.username == channel_id) {
     handle_post(msg).then(informMe(msg.message_id, 'new_post'))
   }
 })
 
 bot.on('edited_channel_post_caption', msg => {
-  if (msg.photo) {// && msg.sender_chat.username == channel_id) {
+  if (msg.photo && msg.sender_chat.username == channel_id) {
     handle_edit(msg).then(informMe(msg.message_id, 'edit_post'))
   }
 })
