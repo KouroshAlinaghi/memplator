@@ -5,9 +5,9 @@ import { Low, JSONFile } from 'lowdb'
 dotenv.config()
 
 const token = process.env.TOKEN
-const channel_id = process.env.CHANNEL_ID
-const helper_channel_id = process.env.HELPER_CHANNEL_ID
-const my_username = process.env.ME
+const channelId = process.env.CHANNEL_ID
+const helperChannelId = process.env.HELPER_CHANNEL_ID
+const myUsername = process.env.ME
 
 const adapter = new JSONFile('database.json')
 const db = new Low(adapter)
@@ -25,61 +25,75 @@ const search = query => {
 const informMe = (id, event) => {
   let resp = ''
   switch (event) {
-    case 'new_post':
+    case 'newPost':
       resp = `Added #${id} to the database.`
       break;
-    case 'edit_post':
+    case 'editPost':
       resp = `Edited #${id} in the database.`
       break;
-    case 'delete_post':
+    case 'deletePost':
       resp = `Deleted #${id} from the database.`
+      break;
+    case 'fail':
+      resp = `We got a problem: ${id}` // id is now the error message ha ha hahahhahaheg
+    default: 
+      resp = "what the fuck"
   }
 
-  bot.sendMessage('@' + helper_channel_id, resp)
+  bot.sendMessage('@' + helperChannelId, resp)
 }
 
-async function handle_post(msg) {
+async function handlePost(msg) {
   db.data.push({
     id: msg.message_id,
     text: msg.caption || '',
-    height: msg.photo[msg.photo.length - 1].height,
-    width: msg.photo[msg.photo.length - 1].width
+    height: msg.photo.at(-1).height,
+    width: msg.photo.at(-1).width
   })
 
-  db.write()
+  await db.write()
 }
 
-async function handle_edit(msg) {
+async function handleEdit(msg) {
   const index = db.data.findIndex(post => {
     return post.id == msg.message_id
   })
 
   if (index >= 0) {
     db.data[index].text = msg.caption
-    db.write()
+    await db.write()
   }
 }
 
-async function handle_delete(msg, match) {
+async function handleDelete(msg, match) {
   db.data = db.data.filter(post => {return post.id !== parseInt(match[1])})
-  db.write()
+  await db.write()
 }
 
 bot.on('channel_post', msg => {
-  if (msg.photo && msg.sender_chat.username == channel_id) {
-    handle_post(msg).then(informMe(msg.message_id, 'new_post'))
+  if (msg.photo && msg.sender_chat.username == channelId) {
+    handlePost(msg).then(
+    () => informMe(msg.message_id, 'newPost'),
+    err => informMe(err, 'fail')
+  )
   }
 })
 
 bot.on('edited_channel_post_caption', msg => {
-  if (msg.photo && msg.sender_chat.username == channel_id) {
-    handle_edit(msg).then(informMe(msg.message_id, 'edit_post'))
+  if (msg.photo && msg.sender_chat.username == channelId) {
+    handleEdit(msg).then(
+    () => informMe(msg.message_id, 'editPost'),
+    err => informMe(err, 'fail')
+  )
   }
 })
 
 bot.onText(/\/delete (.+)/, (msg, match) => {
-  if (msg.from.username == my_username) {
-    handle_delete(msg, match).then(informMe(match[1], 'delete_post'))
+  if (msg.from.username == myUsername) {
+    handleDelete(msg, match).then(
+    () => informMe(match[1], 'deletePost'),
+    err => informMe(err, 'fail')
+  )
   }
 })
 
