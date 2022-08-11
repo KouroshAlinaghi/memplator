@@ -84,7 +84,7 @@ async function handle(event, msg, match) {
       case "deletePost":
         const updatedData = db.data.filter(p => {return p.id !== parseInt(match[1])})
         if (updatedData.length == db.data.length) {
-          throw `Post #${msg.message_id} does not exist.`
+          throw `Post #${match[1]} does not exist.`
         }
         db.data = updatedData
         await db.write()
